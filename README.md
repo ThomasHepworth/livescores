@@ -2,6 +2,8 @@
 
 ### Quick instructions to get the livescores spider up and running on an external machine
 
+<hr>
+
 **initial, pip install required packages through requirements.txt by running:**
 `$pip install -r requirements.txt`
 
