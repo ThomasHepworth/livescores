@@ -14,7 +14,7 @@
 ### Teere are two ways to run the spider, depending on which method you'd prefer to use
 
 #### Running in a python script
-* Open up main.py and run the script. 
+* Open up `main.py` and run the script. 
 * This script uses schedule to automatically update current_scores.json every minute.
 
 #### Running using the shell
