@@ -1,6 +1,5 @@
 import schedule
 import time
-import os
 from livescoresSpider import flashscoreSpider
 from scrapy.crawler import CrawlerProcess
 
