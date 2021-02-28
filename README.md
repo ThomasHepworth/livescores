@@ -1,4 +1,4 @@
-# livescores
+# Live Football Scores Scraper
 
 #### Quick instructions to get the livescores spider up and running on an external machine
 
