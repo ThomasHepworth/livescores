@@ -59,8 +59,6 @@ class flashscoreSpider(scrapy.Spider):
                                                                       count=cnt).xpath('.//@href').getall()
                 # match urls only give the end string so append
                 links[:] = ["%s%s" % (fs_url, i) for i in links]
-                # add our links to "items"
-                links = links
 
                 # save data to list
                 scores[key] = {
