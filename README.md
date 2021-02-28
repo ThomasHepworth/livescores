@@ -1,6 +1,6 @@
 # Live Football Scores Scraper
 
-#### Quick instructions to get the livescores spider up and running on an external machine
+### Quick instructions to get the livescores spider up and running on an external machine
 
 **initial, pip install required packages through requirements.txt by running:**
 `$pip install -r requirements.txt`
