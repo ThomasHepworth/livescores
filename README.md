@@ -4,7 +4,7 @@
 
 <hr>
 
-**initial, pip install required packages through requirements.txt by running:**
+**initial, pip install required packages through requirements.txt by running**
 `$pip install -r requirements.txt`
 
 **You then need to move your working directory to into the first folder to allow scrapy to recognise the scrapy.cfg file. To do this, simply run:**
