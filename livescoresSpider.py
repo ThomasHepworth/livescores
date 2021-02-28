@@ -7,11 +7,13 @@ fs_url = 'https://www.flashscore.co.uk'
 
 # specify the leagues you want to scrape from
 leagues_to_scrape = [
-    'AFRICA: CAF Champions League',
-    'BRAZIL: Campeonato Potiguar - First stage',
-    'ENGLAND: Premier League',
-    'GERMANY: 2. Bundesliga',
-    'MOROCCO: Botola Pro'
+    # 'AFRICA: CAF Champions League',
+    # 'BRAZIL: Campeonato Potiguar - First stage',
+    # 'ENGLAND: Premier League',
+    # 'GERMANY: 2. Bundesliga',
+    # 'MOROCCO: Botola Pro',
+    # 'ARGENTINA: Copa de la Liga Profesional',
+    # 'BRAZIL: Campeonato Paulista'
 ]
 
 class flashscoreSpider(scrapy.Spider):
@@ -22,12 +24,20 @@ class flashscoreSpider(scrapy.Spider):
         scores_xpath = "//div[@id = 'score-data']"
         core_xpath = response.xpath('//*[@id="score-data"]')
 
+        # if you've not entered a league, pull all live data
+        if len(leagues_to_scrape) == 0:
+            leagues = response.xpath('//*[@id="score-data"]/h4/text()').getall()
+        else:
+            leagues = leagues_to_scrape
+
+
         scores = {}
         for cnt, h4 in enumerate(core_xpath.xpath('h4'), start=1):
             # pull our h4 tags (these contain the names of each league)
             key = h4.xpath('normalize-space()').get().strip()
+
             # if our league is in our list of leagues to scrape, pull data
-            if key in leagues_to_scrape:
+            if key in leagues:
                 # pull info on each team playing
                 # to do this, we're using the knowledge that each team name is bounded by a span tag (which contains the match time)
                 # if we pull all text between span tags, we can avoid having spaces (which are used when there has been a red card)

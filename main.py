@@ -1,23 +1,15 @@
-import schedule
-import time
-from livescoresSpider import flashscoreSpider
 from scrapy.crawler import CrawlerProcess
+from apscheduler.schedulers.twisted import TwistedScheduler
+from livescoresSpider import flashscoreSpider # import our spider
 
-def run_spider():
-    # specify setting for when running through our script
-    process = CrawlerProcess(settings={
-        "FEEDS": {
-            "current_scores.json": {"format": "json"},
-        },
-    })
-    # Code to make script run like normal Python script
-    process.crawl(flashscoreSpider)
-    process.start()  # the script will block here until the crawling is finished
-
-print('Scheduler initialised')
-schedule.every(1).minutes.do(run_spider)
-print('Next job is set to run at: ' + str(schedule.next_run()))
-
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+# setup process to output to a json file
+process = CrawlerProcess(settings={
+    "FEEDS": {
+        "current_scores.json": {"format": "json"},
+    },
+})
+# set up our scheduler and time between each run
+scheduler = TwistedScheduler()
+scheduler.add_job(process.crawl, 'interval', args=[flashscoreSpider], minutes=1)
+scheduler.start()
+process.start(False)
