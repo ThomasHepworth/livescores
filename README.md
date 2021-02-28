@@ -15,7 +15,7 @@
 
 #### Running in a python script
 * Open up `main.py` and run the script. 
-* This script uses schedule to automatically update current_scores.json every minute.
+* This script uses schedule to automatically update current_scores.json every minute, so you should get consistent updates every few minutes (based on whatever you set it to). Obviously, be careful with how many requests you send... you don't want to get banned.
 
 #### Running using the shell
 Similarly to the above, you can also run the spider freely in the shell.
