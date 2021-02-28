@@ -7,7 +7,6 @@
 **initial, pip install required packages through requirements.txt by running**
 `$pip install -r requirements.txt`
 
-<br>
 <hr>
 
 ### Teere are two ways to run the spider, depending on which method you'd prefer to use
