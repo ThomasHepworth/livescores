@@ -1,4 +1,4 @@
 scrapy==2.4.1
-schedule==1.0.0
+APScheduler==3.7.0
 itemloaders==1.0.4
 w3lib==1.22.0
