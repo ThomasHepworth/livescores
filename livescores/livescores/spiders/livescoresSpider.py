@@ -1,14 +1,19 @@
 import scrapy
+import itertools # used to remove lists of lists
 from livescores.items import LivescoresItem
+from scrapy.crawler import CrawlerProcess
 
 # url for the main flashscores website (we're not scraping directly from this)
 # links can be pasted to the end of this to pull out further info on the game in a web browser
 fs_url = 'https://www.flashscore.co.uk'
+
 # specify the leagues you want to scrape from
 leagues_to_scrape = [
      'AFRICA: CAF Champions League',
+     'BRAZIL: Campeonato Potiguar - First stage',
      'ENGLAND: Premier League',
-     'GERMANY: 2. Bundesliga'
+     'GERMANY: 2. Bundesliga',
+    'MOROCCO: Botola Pro'
 ]
 
 class flashscoreSpider(scrapy.Spider):
@@ -36,24 +41,41 @@ class flashscoreSpider(scrapy.Spider):
                 # calc span tags in current header section we're looking at
                 span_tags = core_xpath.xpath('//span[count(preceding-sibling::h4)=$count]',
                                                                           count=cnt)
+
+                teams = []
                 # pull out team names and use string to concatenate
                 for count, span in enumerate(span_tags, start=1):
-                    items['teams']= core_xpath.xpath(
+                    teams.append(core_xpath.xpath(
                             'string(//text()[count(preceding-sibling::span)=$count])',
-                            count=count + span_total_len).getall()
+                            count=count + span_total_len).getall())
+                teams = list(itertools.chain(*teams))
+
 
                 # pull game time
-                items['game_time'] = core_xpath.xpath('span[count(preceding-sibling::h4)=$count]',
+                game_time = core_xpath.xpath('span[count(preceding-sibling::h4)=$count]',
                                                                            count=cnt).xpath('.//text()').getall()
                 # pull the current score
-                items['livescores'] = core_xpath.xpath('a[count(preceding-sibling::h4)=$count]',
+                livescores = core_xpath.xpath('a[count(preceding-sibling::h4)=$count]',
                                                                            count=cnt).xpath('.//text()').getall()
                 # extract links for each game
-                items['links'] = core_xpath.xpath('a[count(preceding-sibling::h4)=$count]',
+                links = core_xpath.xpath('a[count(preceding-sibling::h4)=$count]',
                                                                       count=cnt).xpath('.//@href').getall()
-                # concat links to our flashscores url (to get the full path)
-                # links[:] = ["%s%s" % (fs_url, i) for i in links]
+                # match urls only give the end string so append
+                links[:] = ["%s%s" % (fs_url, i) for i in links]
+                # add our links to "items"
+                links = links
 
                 # save data to list
-                scores[key] = items
+                scores[key] = {
+                    'teams': teams,
+                    'time': game_time,
+                    'scores': livescores,
+                    'links': links
+                }
         yield scores
+
+
+# Code to make script run like normal Python script
+# process = CrawlerProcess()
+# process.crawl(flashscore)
+# process.start() # the script will block here untill the crawling is finished
