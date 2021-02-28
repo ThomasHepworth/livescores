@@ -1,6 +1,5 @@
 import scrapy
 import itertools # used to remove lists of lists
-from scrapy.crawler import CrawlerProcess
 
 # url for the main flashscores website (we're not scraping directly from this)
 # links can be pasted to the end of this to pull out further info on the game in a web browser
