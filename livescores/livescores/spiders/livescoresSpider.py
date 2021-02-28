@@ -1,4 +1,5 @@
 import scrapy
+from livescores.items import LivescoresItem
 
 # url for the main flashscores website (we're not scraping directly from this)
 # links can be pasted to the end of this to pull out further info on the game in a web browser
@@ -15,6 +16,7 @@ class flashscoreSpider(scrapy.Spider):
     start_urls = ['https://m.flashscore.co.uk/?s=2']
 
     def parse(self, response):
+        items = LivescoresItem()
         scores_xpath = "//div[@id = 'score-data']"
 
         scores = {}
@@ -34,27 +36,22 @@ class flashscoreSpider(scrapy.Spider):
                                                                           count=cnt)
                 # pull out team names and use string to concatenate
                 for count, span in enumerate(span_tags, start=1):
-                    teams= response.xpath('//*[@id="score-data"]').xpath(
+                    items['teams']= response.xpath('//*[@id="score-data"]').xpath(
                             'string(//text()[count(preceding-sibling::span)=$count])',
                             count=count + span_total_len).getall()
 
                 # pull game time
-                game_time = response.xpath('//*[@id="score-data"]').xpath('span[count(preceding-sibling::h4)=$count]',
+                items['game_time'] = response.xpath('//*[@id="score-data"]').xpath('span[count(preceding-sibling::h4)=$count]',
                                                                            count=cnt).xpath('.//text()').getall()
                 # pull the current score
-                livescores = response.xpath('//*[@id="score-data"]').xpath('a[count(preceding-sibling::h4)=$count]',
+                items['livescores'] = response.xpath('//*[@id="score-data"]').xpath('a[count(preceding-sibling::h4)=$count]',
                                                                            count=cnt).xpath('.//text()').getall()
                 # extract links for each game
-                links = response.xpath('//*[@id="score-data"]').xpath('a[count(preceding-sibling::h4)=$count]',
+                items['links'] = response.xpath('//*[@id="score-data"]').xpath('a[count(preceding-sibling::h4)=$count]',
                                                                       count=cnt).xpath('.//@href').getall()
                 # concat links to our flashscores url (to get the full path)
-                links[:] = ["%s%s" % (fs_url, i) for i in links]
+                # links[:] = ["%s%s" % (fs_url, i) for i in links]
 
                 # save data to list
-                scores[key] = {
-                    'teams': teams,
-                    'time': game_time,
-                    'scores': livescores,
-                    'links': links
-                }
+                scores[key] = items
         yield scores

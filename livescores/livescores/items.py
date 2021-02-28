@@ -8,5 +8,7 @@ import scrapy
 
 class LivescoresItem(scrapy.Item):
     # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+    teams = scrapy.Field()
+    game_time = scrapy.Field()
+    livescores = scrapy.Field()
+    links = scrapy.Field()
