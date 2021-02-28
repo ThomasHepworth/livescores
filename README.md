@@ -31,8 +31,8 @@ Similarly to the above, you can also run the spider freely in the shell.
 <hr>
 
 ### Editing internal variables to change the outputs
-The code is currently setup to only pull data from specific leagues.
+The code is currently setup to pull data from leagues that the user specifies.
 
-If you want to remove this restriction (and instead create data for **_all_** live games), you either need to change how `leagues_to_scrape` is defined in `livescoresSpider.py`, or just remove the if statement which filters for only leagues on interest.
+If you want to edit this restriction (and instead create data for **_all_** live games), you simply need to remove all current leagues from `leagues_to_scrape`, which can be found within `livescoresSpider.py`.
 
-To edit which leagues are selected, open up `livescoresSpider.py` (there are two versions of this script at present, will be cleaned in the future) and edit `leagues_to_scrape`. To find league names, you'll need to log into flashscores and take a look at their naming convent
+To edit which leagues are selected, open up `livescoresSpider.py` (there are two versions of this script at present - one for shell, one for easier running in python - will be cleaned in the future) and edit `leagues_to_scrape`. To find league names, you'll need to log into flashscores and take a look at their naming conventions. Mobile link (easier to navgiate) can be accessed here - https://m.flashscore.co.uk/?s=2.
