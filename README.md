@@ -4,14 +4,14 @@
 
 <hr>
 
-#### Installing required packages
+### Installing required packages
 
 **initial, pip install required packages through requirements.txt by running**
 `$pip install -r requirements.txt`
 
 <hr>
 
-### Teere are two ways to run the spider, depending on which method you'd prefer to use
+### There are two ways to run the spider, depending on which method you'd prefer to use
 
 #### Running in a python script
 * Open up `main.py` and run the script. 
