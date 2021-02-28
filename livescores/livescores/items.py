@@ -4,6 +4,9 @@
 # https://docs.scrapy.org/en/latest/topics/items.html
 
 import scrapy
+from scrapy.loader import ItemLoader
+from itemloaders.processors import TakeFirst, MapCompose
+from w3lib.html import remove_tags
 
 
 class LivescoresItem(scrapy.Item):

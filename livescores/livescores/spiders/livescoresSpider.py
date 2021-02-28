@@ -18,9 +18,10 @@ class flashscoreSpider(scrapy.Spider):
     def parse(self, response):
         items = LivescoresItem()
         scores_xpath = "//div[@id = 'score-data']"
+        core_xpath = response.xpath('//*[@id="score-data"]')
 
         scores = {}
-        for cnt, h4 in enumerate(response.xpath(scores_xpath).xpath('h4'), start=1):
+        for cnt, h4 in enumerate(core_xpath.xpath('h4'), start=1):
             # pull our h4 tags (these contain the names of each league)
             key = h4.xpath('normalize-space()').get().strip()
             # if our league is in our list of leagues to scrape, pull data
@@ -30,24 +31,25 @@ class flashscoreSpider(scrapy.Spider):
                 # if we pull all text between span tags, we can avoid having spaces (which are used when there has been a red card)
                 # calculate how many span tags we've had so far (for the entire page)
                 span_total_len = len(
-                    response.xpath('//div[@id = "score-data"]/h4[$count]//preceding-sibling::span', count=cnt).getall())
+                    response.xpath('//div[@id = "score-data"]/h4[$count]//preceding-sibling::span', count=cnt).getall()
+                )
                 # calc span tags in current header section we're looking at
-                span_tags = response.xpath('//*[@id="score-data"]').xpath('//span[count(preceding-sibling::h4)=$count]',
+                span_tags = core_xpath.xpath('//span[count(preceding-sibling::h4)=$count]',
                                                                           count=cnt)
                 # pull out team names and use string to concatenate
                 for count, span in enumerate(span_tags, start=1):
-                    items['teams']= response.xpath('//*[@id="score-data"]').xpath(
+                    items['teams']= core_xpath.xpath(
                             'string(//text()[count(preceding-sibling::span)=$count])',
                             count=count + span_total_len).getall()
 
                 # pull game time
-                items['game_time'] = response.xpath('//*[@id="score-data"]').xpath('span[count(preceding-sibling::h4)=$count]',
+                items['game_time'] = core_xpath.xpath('span[count(preceding-sibling::h4)=$count]',
                                                                            count=cnt).xpath('.//text()').getall()
                 # pull the current score
-                items['livescores'] = response.xpath('//*[@id="score-data"]').xpath('a[count(preceding-sibling::h4)=$count]',
+                items['livescores'] = core_xpath.xpath('a[count(preceding-sibling::h4)=$count]',
                                                                            count=cnt).xpath('.//text()').getall()
                 # extract links for each game
-                items['links'] = response.xpath('//*[@id="score-data"]').xpath('a[count(preceding-sibling::h4)=$count]',
+                items['links'] = core_xpath.xpath('a[count(preceding-sibling::h4)=$count]',
                                                                       count=cnt).xpath('.//@href').getall()
                 # concat links to our flashscores url (to get the full path)
                 # links[:] = ["%s%s" % (fs_url, i) for i in links]
