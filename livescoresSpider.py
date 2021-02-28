@@ -37,7 +37,6 @@ class flashscoreSpider(scrapy.Spider):
                 )
                 # calc span tags in current header section we're looking at
                 span_tags = core_xpath.xpath('//span[count(preceding-sibling::h4)=$count]',
-
                                                                           count=cnt)
 
                 teams = []
@@ -71,13 +70,3 @@ class flashscoreSpider(scrapy.Spider):
                     'links': links
                 }
         yield scores
-
-# # specify setting for when running through our script
-# process = CrawlerProcess(settings={
-#     "FEEDS": {
-#         "current_scores.json": {"format": "json"},
-#     },
-# })
-# # Code to make script run like normal Python script
-# process.crawl(flashscoreSpider)
-# process.start() # the script will block here until the crawling is finished
