@@ -22,7 +22,7 @@ class flashscoreSpider(scrapy.Spider):
 
     def parse(self, response):
         scores_xpath = "//div[@id = 'score-data']"
-        core_xpath = response.xpath('//*[@id="score-data"]')
+        core_xpath = response.xpath(scores_xpath)
 
         # if you've not entered a league, pull all live data
         if len(leagues_to_scrape) == 0:
