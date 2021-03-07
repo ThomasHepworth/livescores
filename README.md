@@ -7,7 +7,7 @@
 ### Installing required packages
 
 **initial, pip install required packages through requirements.txt by running**
-`$pip install -r requirements.txt`
+`pip install -r requirements.txt`
 
 <hr>
 
