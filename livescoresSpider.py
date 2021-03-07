@@ -7,13 +7,9 @@ fs_url = 'https://www.flashscore.co.uk'
 
 # specify the leagues you want to scrape from
 leagues_to_scrape = [
-    # 'AFRICA: CAF Champions League',
-    # 'BRAZIL: Campeonato Potiguar - First stage',
     # 'ENGLAND: Premier League',
-    # 'GERMANY: 2. Bundesliga',
-    # 'MOROCCO: Botola Pro',
-    # 'ARGENTINA: Copa de la Liga Profesional',
-    # 'BRAZIL: Campeonato Paulista'
+    # 'ENGLAND: Championship',
+    # 'ENGLAND: National League'
 ]
 
 class flashscoreSpider(scrapy.Spider):
@@ -56,7 +52,7 @@ class flashscoreSpider(scrapy.Spider):
                             'string(//text()[count(preceding-sibling::span)=$count])',
                             count=count + span_total_len).getall())
                 teams = list(itertools.chain(*teams))
-
+                teams = [i.strip() for i in teams] # strip whitespace
 
                 # pull game time
                 game_time = core_xpath.xpath('span[count(preceding-sibling::h4)=$count]',
