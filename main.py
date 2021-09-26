@@ -52,8 +52,8 @@ process = CrawlerProcess(settings={
 
 # set up our scheduler and time between each run
 scheduler = TwistedScheduler()
-scheduler.add_job(create_old_scores, 'interval', id = 'create_old_scores', seconds=180)
-scheduler.add_job(process.crawl, 'interval', args=[flashscoreSpider], id = 'scrape_scores_data', seconds=180)
+scheduler.add_job(create_old_scores, 'interval', id = 'create_old_scores', seconds=10)
+scheduler.add_job(process.crawl, 'interval', args=[flashscoreSpider], id = 'scrape_scores_data', seconds=10)
 # scheduler.add_job(write_to_s3, 'interval', id = 'write_to_s3', seconds=10)
 scheduler.start()
 process.start(False)
