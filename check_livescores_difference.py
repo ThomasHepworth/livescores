@@ -15,15 +15,11 @@ def writeToJSONFile(path, fileName, data):
     with open(filePathNameWExt, 'w') as fp:
         json.dump(data, fp)
 
-# find new leagues
-# read in current and old scores
-current_scores = js_r("current_scores.json")
-old_scores = js_r("old_scores.json")
-new_league_data = {k: current_scores[0][k] for k in set(current_scores[0]) - set(old_scores[0])}
-
 ### find new games and score changes of existing games
 # loop around our new games and find the corresponding info
-def find_data_on_new_games(new_games, key):
+def find_data_on_new_games(new_games,
+                           key,
+                           current_scores_data_for_league):
     # create blank lists to store our values to
     new_teams = []
     new_time = []
@@ -45,7 +41,10 @@ def find_data_on_new_games(new_games, key):
         }
     return(dictionary_to_output)
 
-def check_score_change(old_games, key):
+def check_score_change(old_games,
+                       key,
+                       current_scores_data_for_league,
+                       old_scores_data_for_league):
     # create blank lists to store our values to
     score_change_team = []
     score_change_time = []
@@ -77,22 +76,41 @@ def check_score_change(old_games, key):
         return(dictionary_to_output)
 
 # find both new games that have recently started and existing games with changes
-new_games_dict = {}
-score_change_dict = {}
-for key in old_scores[0]:
-    # find new and old data for scores
-    old_scores_data_for_league = old_scores[0][key]
-    current_scores_data_for_league = current_scores[0][key]
-    # find new games that didn't exist in the old scores
-    new_games = set(current_scores_data_for_league['teams']) - set(old_scores_data_for_league['teams'])
-    # find existing games so we can check for score changes
-    old_games = set(current_scores_data_for_league['teams']) & set(old_scores_data_for_league['teams'])
-    if len(new_games) > 0:
-        new_games_dict[key] = find_data_on_new_games(new_games=new_games,
-                                                    key=key)
-    if len(old_games) > 0:
-         dict_output = check_score_change(old_games=old_games,
-                                                    key=key)
-         print(dict_output)
-         if len(dict_output) != 0:
-             score_change_dict[key] = dict_output
+def find_latest_scores_data():
+    # find new leagues
+    # read in current and old scores
+    current_scores = js_r("current_scores_v2.json")
+    old_scores = js_r("old_scores.json")
+    # find new league data
+    new_league_data = {k: current_scores[0][k] for k in set(current_scores[0]) - set(old_scores[0])}
+    # find list of leagues we need to skip
+    missing_league_data = set(old_scores[0]) - set(current_scores[0])
+    new_games_dict = {}
+    score_change_dict = {}
+    for key in old_scores[0]:
+        if key not in missing_league_data:
+            # find new and old data for scores
+            old_scores_data_for_league = old_scores[0][key]
+            current_scores_data_for_league = current_scores[0][key]
+            # find new games that didn't exist in the old scores
+            new_games = set(current_scores_data_for_league['teams']) - set(old_scores_data_for_league['teams'])
+            # find existing games so we can check for score changes
+            old_games = set(current_scores_data_for_league['teams']) & set(old_scores_data_for_league['teams'])
+            if len(new_games) > 0:
+                new_games_dict[key] = find_data_on_new_games(new_games=new_games,
+                                                             key=key,
+                                                             current_scores_data_for_league=current_scores_data_for_league)
+            if len(old_games) > 0:
+                dict_output = check_score_change(old_games=old_games,
+                                                 key=key,
+                                                 old_scores_data_for_league=old_scores_data_for_league,
+                                                 current_scores_data_for_league=current_scores_data_for_league)
+                if len(dict_output) != 0:
+                    score_change_dict[key] = dict_output
+
+    output_dict = {
+        'new_games': new_games_dict,
+        'new_league': new_league_data,
+        'score_change': score_change_dict
+    }
+    return(output_dict)
