@@ -8,11 +8,7 @@ fs_url = 'https://www.flashscore.co.uk'
 
 # specify the leagues you want to scrape from
 leagues_to_scrape = [
-    'AFRICA: CAF Champions League',
-    'BRAZIL: Campeonato Potiguar - First stage',
     'ENGLAND: Premier League',
-    'GERMANY: 2. Bundesliga',
-    'MOROCCO: Botola Pro'
 ]
 
 class flashscoreSpider(scrapy.Spider):
@@ -20,7 +16,6 @@ class flashscoreSpider(scrapy.Spider):
     start_urls = ['https://m.flashscore.co.uk/?s=2']
 
     def parse(self, response):
-        scores_xpath = "//div[@id = 'score-data']"
         core_xpath = response.xpath('//*[@id="score-data"]')
 
         scores = {}
@@ -34,12 +29,14 @@ class flashscoreSpider(scrapy.Spider):
                 # if we pull all text between span tags, we can avoid having spaces (which are used when there has been a red card)
                 # calculate how many span tags we've had so far (for the entire page)
                 span_total_len = len(
-                    response.xpath('//div[@id = "score-data"]/h4[$count]//preceding-sibling::span', count=cnt).getall()
+                    response.xpath(
+                        '//div[@id = "score-data"]/h4[$count]//preceding-sibling::span', count=cnt).getall()
                 )
                 # calc span tags in current header section we're looking at
-                span_tags = core_xpath.xpath('//span[count(preceding-sibling::h4)=$count]',
-
-                                                                          count=cnt)
+                span_tags = core_xpath.xpath(
+                    '//span[count(preceding-sibling::h4)=$count]',
+                    count=cnt
+                )
 
                 teams = []
                 # pull out team names and use string to concatenate
@@ -49,36 +46,22 @@ class flashscoreSpider(scrapy.Spider):
                             count=count + span_total_len).getall())
                 teams = list(itertools.chain(*teams))
 
-
                 # pull game time
-                game_time = core_xpath.xpath('span[count(preceding-sibling::h4)=$count]',
-                                                                           count=cnt).xpath('.//text()').getall()
-                # pull the current score
-                livescores = core_xpath.xpath('a[count(preceding-sibling::h4)=$count]',
-                                                                           count=cnt).xpath('.//text()').getall()
-                # extract links for each game
-                links = core_xpath.xpath('a[count(preceding-sibling::h4)=$count]',
-                                                                      count=cnt).xpath('.//@href').getall()
-                # match urls only give the end string so append
-                links[:] = ["%s%s" % (fs_url, i) for i in links]
-                # add our links to "items"
-                links = links
+                to_scrape = {
+                    "time": ('span[count(preceding-sibling::h4)=$count]', './/text()'),
+                    "scores": ('a[count(preceding-sibling::h4)=$count]', './/text()'),
+                    "links": ('a[count(preceding-sibling::h4)=$count]', './/@href'),
+                }
+
+                game_info = {
+                    key: core_xpath.xpath(xpath, count=cnt).xpath(html_tag).getall()
+                    for key, (xpath, html_tag) in to_scrape.items()
+                }
+                game_info["links"] = ["%s%s" % (fs_url, i) for i in game_info["links"]]
 
                 # save data to list
                 scores[key] = {
                     'teams': teams,
-                    'time': game_time,
-                    'scores': livescores,
-                    'links': links
+                    **game_info
                 }
         yield scores
-
-# # specify setting for when running through our script
-# process = CrawlerProcess(settings={
-#     "FEEDS": {
-#         "current_scores.json": {"format": "json"},
-#     },
-# })
-# # Code to make script run like normal Python script
-# process.crawl(flashscoreSpider)
-# process.start() # the script will block here until the crawling is finished
